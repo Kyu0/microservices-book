@@ -20,6 +20,10 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+	testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.4")
+	testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
+	testImplementation("io.mockk:mockk-jvm:1.13.4")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
