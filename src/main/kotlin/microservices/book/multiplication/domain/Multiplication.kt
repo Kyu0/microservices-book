@@ -1,15 +1,10 @@
 package microservices.book.multiplication.domain
 
-class Multiplication(factorA:Int, factorB:Int) {
-    private val factorA:Int
-    private val factorB:Int
-    private val result:Int
-
-    init {
-        this.factorA = factorA
-        this.factorB = factorB
-        this.result = this.factorA * this.factorB
-    }
+class Multiplication(
+    private val factorA: Int
+    , private val factorB: Int
+) {
+    private val result: Int = this.factorA * this.factorB
 
     fun getFactorA():Int {
         return this.factorA
