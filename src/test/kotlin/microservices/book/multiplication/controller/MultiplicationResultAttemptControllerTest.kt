@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.json.JacksonTester
 import org.springframework.test.web.servlet.MockMvc
-import microservices.book.multiplication.controller.MultiplicationResultAttemptController.ResultResponse
 import microservices.book.multiplication.domain.Multiplication
 import microservices.book.multiplication.domain.User
 import org.springframework.http.HttpStatus
@@ -28,7 +27,6 @@ class MultiplicationResultAttemptControllerTest(
 ): BehaviorSpec() {
 
     private lateinit var jsonResult: JacksonTester<MultiplicationResultAttempt>
-    private lateinit var jsonResponse: JacksonTester<ResultResponse>
 
     init {
         JacksonTester.initFields(this, ObjectMapper())
@@ -38,31 +36,35 @@ class MultiplicationResultAttemptControllerTest(
 
             `when`("계산 결과가 맞을 경우") {
                 val correct = true
+                val attempt = MultiplicationResultAttempt(user, multiplication, 3500, correct)
+                val response = getResponse(attempt)
+
                 then("true를 반환한다.") {
-                    checkResponse(correct)
+                    checkResponse(attempt, response)
                 }
             }
 
             `when`("계산 결과가 틀릴 경우") {
                 val correct = false
+                val attempt = MultiplicationResultAttempt(user, multiplication, 3500, correct)
+                val response = getResponse(attempt)
+
                 then("false를 반환한다.") {
-                    checkResponse(correct)
+                    checkResponse(attempt, response)
                 }
             }
         }
     }
 
-    private fun checkResponse(correct: Boolean) {
-        val response = getResponse()
-
+    private fun checkResponse(expected: MultiplicationResultAttempt, response: MockHttpServletResponse) {
         response.status shouldBe HttpStatus.OK.value()
-        response.contentAsString shouldBe jsonResponse.write(ResultResponse(correct)).json
+        response.contentAsString shouldBe jsonResult.write(expected).json
     }
 
-    private fun getResponse(): MockHttpServletResponse {
+    private fun getResponse(data: MultiplicationResultAttempt): MockHttpServletResponse {
         return mvc.perform(post("/results")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonResult.write(attempt).json))
+            .content(jsonResult.write(data).json))
             .andReturn()
             .response
     }
@@ -70,6 +72,5 @@ class MultiplicationResultAttemptControllerTest(
     companion object {
         private val user = User("John Doe")
         private val multiplication = Multiplication(50, 70)
-        private val attempt = MultiplicationResultAttempt(user, multiplication, 3500)
     }
 }

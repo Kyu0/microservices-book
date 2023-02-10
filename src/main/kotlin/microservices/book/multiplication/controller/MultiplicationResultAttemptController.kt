@@ -13,12 +13,14 @@ class MultiplicationResultAttemptController(
 ) {
 
     @PostMapping("/results")
-    fun postResult(@RequestBody multiplicationResultAttempt: MultiplicationResultAttempt): ResponseEntity<ResultResponse> {
-        return ResponseEntity.ok(
-            ResultResponse(multiplicationService.checkAttempt(multiplicationResultAttempt))
-        )
+    fun postResult(@RequestBody multiplicationResultAttempt: MultiplicationResultAttempt): ResponseEntity<MultiplicationResultAttempt> {
+        val isCorrect = multiplicationService.checkAttempt(multiplicationResultAttempt)
+        val attemptCopy = MultiplicationResultAttempt(
+            user= multiplicationResultAttempt.user,
+            multiplication= multiplicationResultAttempt.multiplication,
+            resultAttempt = multiplicationResultAttempt.resultAttempt,
+            correct = isCorrect)
+
+        return ResponseEntity.ok(attemptCopy)
     }
-    class ResultResponse(
-        val correct: Boolean
-    )
 }

@@ -1,20 +1,31 @@
 package microservices.book.multiplication
 
+import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.core.spec.style.Test
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 
 import microservices.book.multiplication.domain.Multiplication
+import microservices.book.multiplication.repository.MultiplicationResultAttemptRepository
+import microservices.book.multiplication.repository.UserRepository
 import microservices.book.multiplication.service.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-class RandomMultiplicationTest: BehaviorSpec() {
-    private val randomGeneratorService:RandomGeneratorService = mockk<RandomGeneratorService>()
+class RandomMultiplicationTest(
+    @MockkBean
+    val randomGeneratorService: RandomGeneratorService,
+
+    @MockkBean
+    val multiplicationResultAttemptRepository: MultiplicationResultAttemptRepository,
+
+    @MockkBean
+    val userRepository: UserRepository
+): BehaviorSpec() {
 
     @Autowired
-    val multiplicationService:MultiplicationService = MultiplicationServiceImpl(randomGeneratorService)
+    val multiplicationService:MultiplicationService = MultiplicationServiceImpl(randomGeneratorService, multiplicationResultAttemptRepository, userRepository)
 
     init {
         given("generatorRandomFactor() 메소드가 순차적으로 50, 30을 반환") {
