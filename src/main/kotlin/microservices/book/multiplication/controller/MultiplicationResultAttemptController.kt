@@ -19,6 +19,6 @@ class MultiplicationResultAttemptController(
         )
     }
     class ResultResponse(
-        private val correct: Boolean
+        val correct: Boolean
     )
 }

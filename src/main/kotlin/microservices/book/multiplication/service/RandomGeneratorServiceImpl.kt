@@ -1,5 +1,8 @@
 package microservices.book.multiplication.service
 
+import org.springframework.stereotype.Service
+
+@Service
 class RandomGeneratorServiceImpl : RandomGeneratorService {
     override fun generateRandomFactor(): Int {
         return (MINIMUM_FACTOR until MAXIMUM_FACTOR + 1).random()
