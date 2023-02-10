@@ -1,6 +1,7 @@
 package microservices.book.multiplication.service
 
 import microservices.book.multiplication.domain.Multiplication
+import microservices.book.multiplication.domain.MultiplicationResultAttempt
 
 interface MultiplicationService {
 
@@ -11,4 +12,9 @@ interface MultiplicationService {
      * @return 무작위 인수를 담은 {@link Multiplication} 객체
      */
     fun createRandomMultiplication(): Multiplication
+
+    /**
+     * @return 곱셈 계산 결과가 맞으면 true, 아니면 false
+     */
+    fun checkAttempt(resultAttempt: MultiplicationResultAttempt): Boolean
 }

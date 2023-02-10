@@ -1,6 +1,6 @@
 package microservices.book.multiplication.domain
 
-class Multiplication(
+data class Multiplication(
     val factorA: Int
     , val factorB: Int
 ) {

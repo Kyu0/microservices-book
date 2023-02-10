@@ -10,8 +10,6 @@ class RandomGeneratorServiceTest: BehaviorSpec() {
     @Autowired
     private lateinit var randomGeneratorService: RandomGeneratorService
 
-    private val MIN_VALUE: Int = 11
-    private val MAX_VALUE: Int = 99
     fun `생성한 랜덤 인수가 유효 범위 내에 있는지 확인하는 테스트`() {
 
         given("generatorRandomFactor() 메소드 반환값이 유효 범위 내에 있는지 확인") {
@@ -20,9 +18,14 @@ class RandomGeneratorServiceTest: BehaviorSpec() {
                 val randomFactors: List<Int> = (0 until repeatCount)
                     .map { randomGeneratorService.generateRandomFactor() }
                 then("MIN_VALUE ~ MAX_VALUE 사이의 값이다.") {
-                    randomFactors should containAll (MIN_VALUE until MAX_VALUE + 1)
+                    (MIN_VALUE until MAX_VALUE + 1).toList() should containAll(randomFactors)
                 }
             }
         }
+    }
+
+    companion object {
+        private const val MIN_VALUE = 11
+        private const val MAX_VALUE = 99
     }
 }
