@@ -27,7 +27,7 @@ class MultiplicationServiceImpl(
     override fun checkAttempt(attempt: MultiplicationResultAttempt): Boolean {
         val user: User? = userRepository.findByAlias(attempt.user.alias)
 
-        check(attempt.correct != true) {
+        check(!attempt.correct) {
             "채점한 상태로 보낼 수 없습니다."
         }
 
@@ -39,5 +39,9 @@ class MultiplicationServiceImpl(
         attemptRepository.save(checkedAttempt)
 
         return isCorrect
+    }
+
+    override fun getStatsForUser(userAlias: String): List<MultiplicationResultAttempt> {
+        return attemptRepository.findTop5ByUserAliasOrderByIdDesc(userAlias)
     }
 }

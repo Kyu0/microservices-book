@@ -16,6 +16,7 @@ import microservices.book.multiplication.domain.User
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
 @WebMvcTest(MultiplicationResultAttemptController::class)
@@ -27,6 +28,7 @@ class MultiplicationResultAttemptControllerTest(
 ): BehaviorSpec() {
 
     private lateinit var jsonResult: JacksonTester<MultiplicationResultAttempt>
+    private lateinit var jsonResultList: JacksonTester<List<MultiplicationResultAttempt>>
 
     init {
         JacksonTester.initFields(this, ObjectMapper())
@@ -51,6 +53,26 @@ class MultiplicationResultAttemptControllerTest(
 
                 then("false를 반환한다.") {
                     checkResponse(attempt, response)
+                }
+            }
+        }
+
+        given("유저의 최근 제출한 답안을 반환하는지 확인하는 테스트") {
+            val user = User("John_Doe")
+            val multiplication = Multiplication(50, 70)
+            val attempt = MultiplicationResultAttempt(user, multiplication, 3500, true)
+            val recentAttempts = arrayListOf(attempt, attempt)
+
+            every { multiplicationService.getStatsForUser("John_Doe") } returns recentAttempts
+
+            `when`("API 요청이 들어오면") {
+                val response = mvc.perform(get("/results")
+                    .param("alias", "John_Doe"))
+                .andReturn().response
+
+                then("유저의 최근 답안을 반환한다.") {
+                    response.status shouldBe HttpStatus.OK.value()
+                    response.contentAsString shouldBe jsonResultList.write(recentAttempts).json
                 }
             }
         }

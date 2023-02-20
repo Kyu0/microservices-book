@@ -12,6 +12,21 @@ function updateMultiplication() {
     })
 }
 
+function updateStats(alias) {
+    $.ajax({
+        url: "http://localhost:8080/results?alias=" + alias
+    }).then(function (data) {
+        $('#stats-body').empty()
+        console.log(data)
+        data.forEach(function (row) {
+            $('#stats-body').append('<tr><td>' + row.id + '</td>' +
+                '<td>' + row.multiplication.factorA + ' x ' + row.multiplication.factorB + '</td>' +
+                '<td>' + row.resultAttempt + '</td>' +
+                '<td>' + (row.correct === true ? 'YES' : 'NO') + '</td></tr>')
+        })
+    })
+}
+
 $(document).ready(function () {
     updateMultiplication()
 
@@ -37,7 +52,6 @@ $(document).ready(function () {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (result) {
-                console.log(result)
                 if (result.correct) {
                     $('.result-message').empty().append("It's correct! Congratulation!");
                 }
@@ -47,6 +61,7 @@ $(document).ready(function () {
             }
         })
 
-        updateMultiplication()
+    updateMultiplication()
+    updateStats(userAlias)
     })
 })

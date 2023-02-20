@@ -83,5 +83,26 @@ class MultiplicationServiceImplTest(
                 }
             }
         }
+
+        given("유저의 최근 제출 답안을 확인하는 테스트") {
+            val multiplication = Multiplication(50, 60)
+            val user = User("John_Doe")
+            val attempt1 = MultiplicationResultAttempt(user, multiplication, 3010, false)
+            val attempt2 = MultiplicationResultAttempt(user, multiplication, 3051, false)
+
+            val latestAttempts: List<MultiplicationResultAttempt> = arrayListOf(attempt1, attempt2)
+
+            every { userRepository.findByAlias("John_Doe") } returns null
+            every { attemptRepository.findTop5ByUserAliasOrderByIdDesc("John_Doe") } returns latestAttempts
+
+            `when`("유저의 이름을 입력하면") {
+                val latestAttemptsResult = multiplicationServiceImpl.getStatsForUser("John_Doe")
+                then("최근 제출 답안을 반환한다.") {
+                    latestAttemptsResult shouldBe  latestAttempts
+                }
+            }
+
+
+        }
     }
 }

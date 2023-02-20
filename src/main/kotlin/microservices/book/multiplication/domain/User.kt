@@ -5,8 +5,8 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 
-@Entity
-class User(
+@Entity(name = "`USER`")
+data class User(
     val alias: String
 ) {
     @Id @GeneratedValue @Column(name = "USER_ID")

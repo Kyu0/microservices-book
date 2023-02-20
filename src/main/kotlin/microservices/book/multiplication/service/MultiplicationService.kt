@@ -17,4 +17,9 @@ interface MultiplicationService {
      * @return 곱셈 계산 결과가 맞으면 true, 아니면 false
      */
     fun checkAttempt(resultAttempt: MultiplicationResultAttempt): Boolean
+
+    /**
+     * @return 유저의 최근 제출한 {@link MultiplicationResultAttempt}을 반환한다.
+     */
+    fun getStatsForUser(userAlias: String): List<MultiplicationResultAttempt>
 }
