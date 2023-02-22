@@ -41,10 +41,11 @@ class MultiplicationServiceImpl(
         val isCorrect = attempt.resultAttempt ==
                 attempt.multiplication.factorA * attempt.multiplication.factorB
 
-        val checkedAttempt = MultiplicationResultAttempt(user ?: attempt.user, attempt.multiplication, attempt.resultAttempt, isCorrect)
+        var checkedAttempt = MultiplicationResultAttempt(user ?: attempt.user, attempt.multiplication, attempt.resultAttempt, isCorrect)
 
-        attemptRepository.save(checkedAttempt)
+        checkedAttempt = attemptRepository.save(checkedAttempt)
 
+        print(checkedAttempt)
         // 이벤트로 결과를 전송
         eventDispatcher.send(MultiplicationSolvedEvent(
             checkedAttempt.id!!,

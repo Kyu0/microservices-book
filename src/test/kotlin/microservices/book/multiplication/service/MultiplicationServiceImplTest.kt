@@ -5,10 +5,14 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.verify
 import microservices.book.multiplication.domain.Multiplication
 import microservices.book.multiplication.domain.MultiplicationResultAttempt
 import microservices.book.multiplication.domain.User
+import microservices.book.multiplication.event.EventDispatcher
+import microservices.book.multiplication.event.MultiplicationSolvedEvent
 import microservices.book.multiplication.repository.MultiplicationResultAttemptRepository
 import microservices.book.multiplication.repository.UserRepository
 import org.mockito.internal.matchers.Null
@@ -24,7 +28,10 @@ class MultiplicationServiceImplTest(
     @MockkBean
     val userRepository: UserRepository,
 
-    private val multiplicationServiceImpl: MultiplicationServiceImpl = MultiplicationServiceImpl(randomGeneratorService, attemptRepository, userRepository)
+    @MockkBean
+    val eventDispatcher: EventDispatcher,
+
+    private val multiplicationServiceImpl: MultiplicationServiceImpl = MultiplicationServiceImpl(randomGeneratorService, attemptRepository, userRepository, eventDispatcher)
 ) : BehaviorSpec() {
     init {
         given("generateRandomFactor() 메소드가 순서대로 50, 30을 반환") {
@@ -50,18 +57,30 @@ class MultiplicationServiceImplTest(
 
         given("계산 결과(50 * 60 = 3000)가 맞는지 확인하는 테스트") {
             val multiplication = Multiplication(50, 60)
-            val user = User("John_Doe")
-            val attempt = MultiplicationResultAttempt(user, multiplication, 3000, false)
-            val verifiedAttempt = MultiplicationResultAttempt(user, multiplication, 3000, true)
+            multiplication.id = 1
 
-            every { userRepository.findByAlias("John_Doe") } returns null
+            val user = User("John_Doe")
+            user.id = 1
+
+            val attempt = MultiplicationResultAttempt(user, multiplication, 3000, false)
+            attempt.id = 1
+
+            val verifiedAttempt = MultiplicationResultAttempt(user, multiplication, 3000, true)
+            verifiedAttempt.id = 1
+
+            val event = MultiplicationSolvedEvent(attempt.id!!, attempt.user.id!!, true)
+
+            every { userRepository.findByAlias("John_Doe") } returns user
             every { attemptRepository.save(verifiedAttempt) } returns verifiedAttempt
+            every { eventDispatcher.send(eq(event)) } just runs
 
             `when`("checkAttempt() 실행 결과가") {
                 val attemptResult = multiplicationServiceImpl.checkAttempt(attempt)
                 then("true다.") {
+
                     attemptResult shouldBe true
                     verify { attemptRepository.save(verifiedAttempt) }
+                    verify { eventDispatcher.send(eq(event)) }
                 }
             }
 
@@ -69,11 +88,19 @@ class MultiplicationServiceImplTest(
 
         given("계산 결과(50 * 60 = 3010)가 틀린지 확인하는 테스트") {
             val multiplication = Multiplication(50, 60)
+            multiplication.id = 1
+
             val user = User("John_Doe")
+            user.id = 1
+
             val attempt = MultiplicationResultAttempt(user, multiplication, 3010, false)
+            attempt.id = 1
+
+            val event = MultiplicationSolvedEvent(attempt.id!!, user.id!!, false)
 
             every { userRepository.findByAlias("John_Doe") } returns null
             every { attemptRepository.save(attempt) } returns attempt
+            every { eventDispatcher.send(eq(event)) } just runs
 
             `when`("checkAttempt() 실행 결과가") {
                 val attemptResult = multiplicationServiceImpl.checkAttempt(attempt)

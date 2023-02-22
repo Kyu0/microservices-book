@@ -7,6 +7,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.*
 
 import microservices.book.multiplication.domain.Multiplication
+import microservices.book.multiplication.event.EventDispatcher
 import microservices.book.multiplication.repository.MultiplicationResultAttemptRepository
 import microservices.book.multiplication.repository.UserRepository
 import microservices.book.multiplication.service.*
@@ -21,11 +22,14 @@ class RandomMultiplicationTest(
     val multiplicationResultAttemptRepository: MultiplicationResultAttemptRepository,
 
     @MockkBean
-    val userRepository: UserRepository
+    val userRepository: UserRepository,
+
+    @MockkBean
+    val eventDispatcher: EventDispatcher
 ): BehaviorSpec() {
 
     @Autowired
-    val multiplicationService:MultiplicationService = MultiplicationServiceImpl(randomGeneratorService, multiplicationResultAttemptRepository, userRepository)
+    val multiplicationService:MultiplicationService = MultiplicationServiceImpl(randomGeneratorService, multiplicationResultAttemptRepository, userRepository, eventDispatcher)
 
     init {
         given("generatorRandomFactor() 메소드가 순차적으로 50, 30을 반환") {
