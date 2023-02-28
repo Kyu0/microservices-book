@@ -8,9 +8,9 @@ import java.io.Serializable
  * 곱셈에 대한 컨텍스트 정보를 제공
  */
 class MultiplicationSolvedEvent(
-    private val multiplicationResultAttemptId: Long,
-    private val userId: Long,
-    private val correct: Boolean
+    val multiplicationResultAttemptId: Long,
+    val userId: Long,
+    val correct: Boolean
 ): Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
