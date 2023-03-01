@@ -22,4 +22,9 @@ interface MultiplicationService {
      * @return 유저의 최근 제출한 {@link MultiplicationResultAttempt}을 반환한다.
      */
     fun getStatsForUser(userAlias: String): List<MultiplicationResultAttempt>
+
+    /**
+     * @return 해당 id를 가진 {@link MultiplicationResultAttempt}를 반환한다.
+     */
+    fun findById(id: Long): MultiplicationResultAttempt?
 }

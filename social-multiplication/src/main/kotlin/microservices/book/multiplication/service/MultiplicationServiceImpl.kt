@@ -1,13 +1,12 @@
 package microservices.book.multiplication.service
 
-import microservices.book.multiplication.domain.Multiplication
-import microservices.book.multiplication.domain.MultiplicationResultAttempt
-import microservices.book.multiplication.domain.User
+import microservices.book.multiplication.domain.*
 import microservices.book.multiplication.event.EventDispatcher
 import microservices.book.multiplication.event.MultiplicationSolvedEvent
 import microservices.book.multiplication.repository.MultiplicationResultAttemptRepository
 import microservices.book.multiplication.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -58,5 +57,9 @@ class MultiplicationServiceImpl(
 
     override fun getStatsForUser(userAlias: String): List<MultiplicationResultAttempt> {
         return attemptRepository.findTop5ByUserAliasOrderByIdDesc(userAlias)
+    }
+
+    override fun findById(id: Long): MultiplicationResultAttempt? {
+        return attemptRepository.findByIdOrNull(id)
     }
 }
