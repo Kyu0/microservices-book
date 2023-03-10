@@ -2,35 +2,64 @@
 #ribbon.eureka.enabled=false
 
 server:
-  port: 8000
-
-spring:
-  cloud:
-    gateway:
-      routes:
-      - id: multiplications
-        uri: http://localhost:8080/multiplications
-        predicates:
-          - Path=/multiplications/**
-      - id: results
-        uri: http://localhost:8080/results
-        predicates:
-          - Path=/results/**
-      - id: leaders
-        uri: http://localhost:8081/leaders
-        predicates:
-          - Path=/leaders/**
-      - id: stats
-        uri: http://localhost:8081/stats
-        predicates:
-          - Path=/stats/**
+    port: 8000
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "gateway"
 
   endpoint:
     gateway:
       enabled: true
+
+spring:
+  cloud:
+    gateway:
+
+      # cors ?? ??
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: 'http://localhost:9090'
+            allow-credentials: true
+            allowedHeaders: '*'
+            allowedMethods:
+              - PUT
+              - GET
+              - POST
+              - DELETE
+              - OPTIONS
+
+      # route ??
+      routes:
+        - id: multiplications
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/multiplications/**
+          filters:
+            - RewritePath=/api/multiplications, /multiplications
+
+        - id: results
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/results/**
+          filters:
+            - RewritePath=/api/results, /results
+
+        - id: leaders
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/leaders/**
+          filters:
+            - RewritePath=/api/leaders, /leaders
+
+        - id: stats
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/stats/**
+          filters:
+            - RewritePath=/api/stats, /stats

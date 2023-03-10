@@ -2,7 +2,8 @@ var SERVER_URL = "http://localhost:8000/api"
 
 function updateLeaderBoard() {
     $.ajax({
-        url: SERVER_URL + "/leaders"
+        url: SERVER_URL + "/leaders",
+        headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
     }).then(function (data) {
         $('#leaderboard-body').empty()
         data.forEach(function (row) {
@@ -15,6 +16,7 @@ function updateLeaderBoard() {
 function updateStats(userId) {
     $.ajax({
         url: SERVER_URL + "/stats?userId=" + userId,
+        headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
         success: function (data) {
             $('#stats-div').show()
             $('#stats-user-id').empty().append(userId)

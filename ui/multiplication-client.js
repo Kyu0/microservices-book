@@ -2,7 +2,8 @@ var SERVER_URL = 'http://localost:8000/api'
 
 function updateMultiplication() {
     $.ajax({
-    url: SERVER_URL + "/multiplications/random"
+        url: SERVER_URL + "/multiplications/random",
+        headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
     }).then(function (data) {
         // 폼 비우기
         $("#attempt-form").find("input[name='result-attempt']").val("");
@@ -20,6 +21,7 @@ function updateResults(alias) {
     $.ajax({
         async: false,
         url: SERVER_URL + "/results?alias=" + alias,
+        headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
         success: function (data) {
             $('#results-div').show()
             $('#results-body').empty()
@@ -58,6 +60,7 @@ $(document).ready(function () {
         // POST 를 이용해 데이터 보내기
         $.ajax({
             url: SERVER_URL + '/results',
+            headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
             type: 'POST',
             data: JSON.stringify(data),
             contentType: 'application/json; charset=utf-8',
