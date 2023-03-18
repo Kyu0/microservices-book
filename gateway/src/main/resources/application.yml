@@ -1,30 +1,40 @@
-#endpoints.trace.sensitive=false
-#ribbon.eureka.enabled=false
-
 server:
     port: 8000
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka/
 
 management:
   endpoints:
     web:
       exposure:
-        include: "gateway"
+        include: gateway, routes, trace
 
   endpoint:
     gateway:
       enabled: true
+      sensitive: false
+    routes:
+      enabled: true
+      sensitive: false
+    trace:
+      enabled: true
+      sensitive: false
 
 spring:
+  application:
+    name: gateway
   cloud:
     gateway:
-
       # cors ?? ??
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: 'http://localhost:9090'
+            allowedOrigins: 'http://localhost:9090' # client tomcat 서버
             allow-credentials: true
             allowedHeaders: '*'
             allowedMethods:
@@ -37,28 +47,28 @@ spring:
       # route ??
       routes:
         - id: multiplications
-          uri: http://localhost:8080
+          uri: lb://multiplication
           predicates:
             - Path=/api/multiplications/**
           filters:
             - RewritePath=/api/multiplications, /multiplications
 
         - id: results
-          uri: http://localhost:8080
+          uri: lb://multiplication
           predicates:
             - Path=/api/results/**
           filters:
             - RewritePath=/api/results, /results
 
         - id: leaders
-          uri: http://localhost:8081
+          uri: lb://gamification
           predicates:
             - Path=/api/leaders/**
           filters:
             - RewritePath=/api/leaders, /leaders
 
         - id: stats
-          uri: http://localhost:8081
+          uri: lb://gamification
           predicates:
             - Path=/api/stats/**
           filters:

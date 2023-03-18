@@ -12,6 +12,8 @@ group = "microservices.book"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
+extra["springCloudVersion"] = "2022.0.1"
+
 repositories {
 	mavenCentral()
 }
@@ -33,6 +35,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 	implementation("org.springframework.boot:spring-boot-starter-log4j2")
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 
 	runtimeOnly("com.h2database:h2")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -45,6 +49,12 @@ dependencies {
 	testImplementation("io.kotest:kotest-assertions-core-jvm:4.4.3")
 	testImplementation("io.mockk:mockk-jvm:1.13.4")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
 }
 
 configurations.forEach {
