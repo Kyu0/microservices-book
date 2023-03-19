@@ -27,6 +27,18 @@ spring:
   application:
     name: gateway
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+      health-check:
+        enabled: true
+        type: HTTP
+        interval: 10s
+        retries: 3
+        path:
+          multiplication: /actuator/health/multiplication
+          gamification: /actuator/health/gamification
+        service-name: multiplication, gamification
     gateway:
       # cors ?? ??
       default-filters:
