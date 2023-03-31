@@ -23,10 +23,30 @@ management:
       enabled: true
       sensitive: false
 
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        cancelRunningFuture: false
+        timeoutDuration: 5s
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true # actuator를 통해 circuitbraker 상태를 확인하기 위해 설정
+        minimumNumberOfCalls: 2 # Circuit Breaker가 에러 비율 또 slow call 비율을 계산하기 전에 요구되는 최소한의 요청 수
+        failureRateThreshold: 50  # 에러 비율 (퍼센트)로 해당 값 이상으로 에러 발생시 서킷이 Open 된다.
+        waitDurationInOpenState: 5s  # 서킷의 상태가 Open에서 Half-open으로 변경되기 전에 Circuit Breaker가 기다리는 시간
+    instances:
+      myCircuitBreaker:
+        baseConfig: default
+
 spring:
   application:
     name: gateway
   cloud:
+    circuitbreaker:
+      resilience4j:
+        enabled: true
     loadbalancer:
       ribbon:
         enabled: false
@@ -64,6 +84,10 @@ spring:
             - Path=/api/multiplications/**
           filters:
             - RewritePath=/api/multiplications, /multiplications
+            - name: CircuitBreaker
+              args:
+                name: myCircuitBreaker
+                fallbackUri: forward:/fallback
 
         - id: results
           uri: lb://multiplication
